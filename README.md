@@ -11,6 +11,8 @@ Derivated from [Dheera Venkatraman air quality monitor project](https://github.c
 
 By default, results are uploaded to mqtt broker for serial database and visualisation tool integration.
 
+![sensor](images/PXL_20211217_155015761.jpg)
+
 ### Enclosure
 
 An STL file for 3D printing a case is in the [stl folder](stl/).
