@@ -1,5 +1,6 @@
 import time, gc, os
 import board
+import busio
 import wifi
 import ssl
 import displayio
@@ -58,6 +59,7 @@ except Exception as e:
 w.feed()
 
 i2c = board.I2C()
+#i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
 scd = adafruit_scd30.SCD30(i2c)
 scd.self_calibration_enabled = True
 scd.forced_recalibration_reference = 412
@@ -74,6 +76,8 @@ BORDER = 2
 display = adafruit_displayio_sh1107.SH1107(display_bus, width=WIDTH, height=HEIGHT, rotation=0)
 display.auto_refresh = True
 font = terminalio.FONT
+splash = displayio.Group()
+display.show(splash)
 
 def mqtt_on_connect(mqtt_client, userdata, flags, rc):
   print("Connected to MQTT Broker!")
@@ -142,11 +146,12 @@ while True:
     payload = '{"location":"' + config.mqtt_location + '","cel":{:.1f}'.format(scd.temperature) + ',"rh":{:.1f}'.format(scd.relative_humidity) + ',"hpa":{:.1f}'.format(scd.ambient_pressure) + ',"ppm":{:.1f}'.format(scd.CO2)  + '}'
     mqtt_client.publish(config.mqtt_topic, payload)
     main_label = ""
-    main_label = label.Label(font, text="{:.1f} cel {:.1f} ppm".format(scd.temperature, scd.CO2), color=0xFFFFFF, scale=2, padding_top=2)
+    #main_label = label.Label(font, text="{:.1f} cel {:.1f} ppm".format(scd.temperature, scd.CO2), color=0xFFFFFF, scale=2, padding_top=2)
     main_label = label.Label(font, text="{:.1f} ppm".format(scd.CO2), color=0xFFFFFF, scale=2, padding_top=2)
     main_label.anchor_point = (0, 0)
     main_label.anchored_position = (14, 14)
-    display.show(main_label)
+    splash = main_label
+    display.show(splash)
     mqtt_client.unsubscribe(config.mqtt_topic)
     mqtt_client.disconnect()
     w.feed()
